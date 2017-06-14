@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html><head><meta http-equiv="content-type" content="text/html; charset=UTF8">
+  <title>Network |  Static smooth curves - World Cup Network</title>
+
+
+  <script type="text/javascript" src="/assets/javascript/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/assets/javascript/vis-4.20.0.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="/assets/stylesheet/vis-network.min.css">
+
+  <style type="text/css">
+    html { 
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body { 
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #mynetwork {
+      width: 100%;
+      height: 100%;
+      background-color: #212121;
+    }
+  </style>
+  
+</head>
+
+<body>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+  var nodes = [];
+  var edges = [];
+
+  var nodesDataset = new vis.DataSet(nodes);
+  var edgesDataset = new vis.DataSet(edges); 
+
+  var eventOutputContainer = document.getElementById("event");
+  var evtSrc = new EventSource("/namespace/wholesale-dev/subscribe");
+
+  evtSrc.onmessage = function(e) {
+    namespace = JSON.parse(e.data);
+    nodesDataset.update(namespace.nodes);
+    edgesDataset.update(namespace.edges);
+  };
+
+  var container = document.getElementById('mynetwork');
+  var data = {
+    nodes: nodesDataset,
+    edges: edgesDataset
+  };
+  var options = {
+    nodes: {
+        shape: 'dot',
+        scaling: {
+          min: 10,
+          max: 30,
+          label: {
+            min: 8,
+            max: 30,
+            drawThreshold: 12,
+            maxVisible: 100
+          }
+        },
+        font: {
+          size: 18,
+          face: 'Tahoma',
+          color: '#ffffff'
+        }
+      },
+      edges: {
+        width: 0.45,
+        color: {inherit: 'from'},
+        smooth: {
+          type: 'continuous'
+        }
+      },
+      layout:{
+        randomSeed: 2,
+        improvedLayout:true,
+        hierarchical: {
+          enabled:false,
+          levelSeparation: 150,
+          nodeSpacing: 100,
+          treeSpacing: 200,
+          blockShifting: true,
+          edgeMinimization: true,
+          parentCentralization: true,
+          direction: 'UD',
+          sortMethod: 'hubsize'
+        }
+      },
+      physics: {
+        solver: 'barnesHut'
+      },
+      interaction: {
+        tooltipDelay: 200,
+        hideEdgesOnDrag: false
+      }
+    };
+  var network = new vis.Network(container, data, options);
+
+</script>
+
+</body></html>
