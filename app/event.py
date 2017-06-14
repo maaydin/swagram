@@ -1,4 +1,5 @@
 import var
+
 class ServerSentEvent(object):
     def __init__(self, data):
         self.data = data
