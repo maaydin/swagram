@@ -38,15 +38,6 @@
   var nodesDataset = new vis.DataSet(nodes);
   var edgesDataset = new vis.DataSet(edges); 
 
-  var eventOutputContainer = document.getElementById("event");
-  var evtSrc = new EventSource("/namespace/wholesale-dev/subscribe");
-
-  evtSrc.onmessage = function(e) {
-    namespace = JSON.parse(e.data);
-    nodesDataset.update(namespace.nodes);
-    edgesDataset.update(namespace.edges);
-  };
-
   var container = document.getElementById('mynetwork');
   var data = {
     nodes: nodesDataset,
@@ -80,12 +71,11 @@
       },
       layout:{
         randomSeed: 2,
-        improvedLayout:true,
         hierarchical: {
-          enabled:false,
+          enabled:true,
           levelSeparation: 150,
-          nodeSpacing: 100,
-          treeSpacing: 200,
+          nodeSpacing: 200,
+          treeSpacing: 100,
           blockShifting: true,
           edgeMinimization: true,
           parentCentralization: true,
@@ -93,9 +83,7 @@
           sortMethod: 'hubsize'
         }
       },
-      physics: {
-        solver: 'barnesHut'
-      },
+      physics: false,
       interaction: {
         tooltipDelay: 200,
         hideEdgesOnDrag: false
@@ -103,6 +91,15 @@
     };
   var network = new vis.Network(container, data, options);
 
+  var eventOutputContainer = document.getElementById("event");
+  var evtSrc = new EventSource("/namespace/wholesale-dev/subscribe");
+
+  evtSrc.onmessage = function(e) {
+    namespace = JSON.parse(e.data);
+    nodesDataset.update(namespace.nodes);
+    edgesDataset.update(namespace.edges);
+    network.fit()
+  };
 </script>
 
 </body></html>
