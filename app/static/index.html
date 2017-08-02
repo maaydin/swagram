@@ -2,7 +2,6 @@
 <html><head><meta http-equiv="content-type" content="text/html; charset=UTF8">
   <title>Network |  Static smooth curves - World Cup Network</title>
 
-
   <script type="text/javascript" src="/assets/javascript/jquery-3.2.1.min.js"></script>
   <script type="text/javascript" src="/assets/javascript/vis-4.20.0.min.js"></script>
   <link type="text/css" rel="stylesheet" href="/assets/stylesheet/vis-network.min.css">
@@ -32,6 +31,15 @@
 <div id="mynetwork"></div>
 
 <script type="text/javascript">
+
+  function createImage(id) {
+    var svg = '<svg height="100" width="100" id="'+id+'">'
+              '<circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" />'
+              '</svg>' ;
+
+    return "data:image/svg+xml;charset=utf-8,"+ encodeURIComponent(svg); 
+  }
+  
   var nodes = [];
   var edges = [];
 
@@ -92,14 +100,15 @@
   var network = new vis.Network(container, data, options);
 
   var eventOutputContainer = document.getElementById("event");
-  var evtSrc = new EventSource("/namespace/wholesale-dev/subscribe");
+  var evtSrc = new EventSource("/namespace/test/subscribe");
 
   evtSrc.onmessage = function(e) {
     namespace = JSON.parse(e.data);
     nodesDataset.update(namespace.nodes);
     edgesDataset.update(namespace.edges);
-    network.fit()
   };
+
+  network.fit()
 </script>
 
 </body></html>

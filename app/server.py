@@ -1,4 +1,4 @@
-import var
+import globals
 import json
 import event
 import time
@@ -17,21 +17,21 @@ def serve_assets(filename):
 @app.route("/namespaces")
 def serve_namespaces():
     namespacelist = []
-    for key, value in var.namespaces.iteritems():
+    for key, value in globals.namespaces.iteritems():
         namespacelist.append(key)
     return json.dumps(namespacelist)
 
 @app.route("/namespace/<path:namespace>/nodes")
 def serve_nodes(namespace):
     nodelist = []
-    for key, value in var.namespaces[namespace]["nodes"].iteritems():
+    for key, value in globals.namespaces[namespace]["nodes"].iteritems():
         nodelist.append(value)
     return json.dumps(nodelist)
 
 @app.route("/namespace/<path:namespace>/edges")
 def serve_edges(namespace):
     edgelist = []
-    for from_service, to_services in var.namespaces[namespace]["edges"].iteritems():
+    for from_service, to_services in globals.namespaces[namespace]["edges"].iteritems():
         for to_service in to_services:
             edgelist.append({"from": from_service, "to": to_service})
     return json.dumps(edgelist)
@@ -40,7 +40,7 @@ def serve_edges(namespace):
 def subscribe(namespace):
     def gen():
         while True:
-            result = var.event.get()
+            result = globals.event.get()
             response = {}
             response["nodes"]=[]
             response["edges"]=[]
@@ -51,6 +51,6 @@ def subscribe(namespace):
                     response["edges"].append({"from": from_service, "to": to_service})
             ev = event.ServerSentEvent(json.dumps(response))
             yield ev.encode()
-            time.sleep(10)
+            time.sleep(5)
 
     return Response(gen(), mimetype="text/event-stream")
